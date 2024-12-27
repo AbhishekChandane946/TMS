@@ -1,0 +1,44 @@
+<div class="modal-footer text-end">
+    <button type="submit" id="update-task-button" class="btn btn-primary">
+        Update Task
+    </button>
+</div>
+
+<script>
+    $('#updateTaskForm').submit(function(e) {
+        e.preventDefault();
+
+        var formData = $(this).serialize(); // Serialize the form data
+        var $submitButton = $('#update-task-button'); // Reference to the submit button
+
+        // Add loader and disable the button
+        $submitButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...')
+                     .prop('disabled', true);
+
+        $.ajax({
+            url: '/tasks/update', // Update task route
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#editTaskModal').modal('hide'); // Hide the modal
+                    alert('Task updated successfully!'); // Show success message
+
+                    // Restore button state
+                    $submitButton.html('Update Task').prop('disabled', false);
+                } else {
+                    alert('Failed to update task');
+
+                    // Restore button state
+                    $submitButton.html('Update Task').prop('disabled', false);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error updating task: ', error);
+
+                // Restore button state
+                $submitButton.html('Update Task').prop('disabled', false);
+            }
+        });
+    });
+</script>
