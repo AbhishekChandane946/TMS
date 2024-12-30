@@ -46,11 +46,18 @@ Route::post('/tasks/{id}/restore', [TaskController::class, 'restoreTask']);
 
 
 
+
+
+
+
 Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
 Route::post('/tasks/comments', [TaskCommentController::class, 'store'])->name('tasks.comments');
 
 
 
+// Route::get('/tasks/{task}/comments', [TaskController::class, 'getComments'])->name('tasks.getComments');
+ 
+Route::get('/tasks/{task}/comments', [TaskCommentController::class, 'getComments'])->name('tasks.getComments');
 
 
  
