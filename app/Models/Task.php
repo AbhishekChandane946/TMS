@@ -32,4 +32,10 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assign_to');  // Assuming 'assign_to' is the foreign key
     }
 
+    public function comments()
+    {
+        return $this->hasMany(TaskComment::class);
+    }
+
+
 }

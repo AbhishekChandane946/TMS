@@ -9,20 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->string('status')->default('Active')->after('priority'); // Add status column
-        });
-    }
+    // public function up(): void
+    // {
+    //     Schema::table('tasks', function (Blueprint $table) {
+    //         $table->string('status')->default('Active')->after('priority'); // Add status column
+    //     });
+    // }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::table('tasks', function (Blueprint $table) {
-            //
-        });
-    }
+    // public function down(): void
+    // {
+    //     Schema::table('tasks', function (Blueprint $table) {
+    //         //
+    //     });
+    // }
 };

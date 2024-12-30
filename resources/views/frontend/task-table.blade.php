@@ -194,6 +194,7 @@
                 <div class="comments-section">
                     <h6>Leave a Comment</h6>
                     <form id="commentForm">
+                     <input type="text" id="task_id" name="task_id" >   
                     <textarea class="form-control" id="commentInput" name="taskComments" rows="3" placeholder="Type something here..."></textarea>
                     <button type="submit" class="btn btn-primary mt-2">Add Comment</button>
                     </form>
@@ -254,37 +255,6 @@
 
 
 
-        // Handle comment submission
-        $('#commentForm').on('submit', function (e) {
-        e.preventDefault();
-
-        const commentInput = $('#commentInput');
-        // const taskId = ;  
-            
-        $.ajax({
-            url:  '{{ route("tasks.comments") }}'  ,
-            method: 'POST',
-            headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            },
-
-            data: formData,
-            success: function (response) {
-                if (response.status === 'success') {
-                  
-                    Swal.fire({
-                        icon: 'success',
-                        title: response.message,
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-
-                    window.location.href = response.redirect_url;
-                }
-            },
-
-        });
-        });
 
 
 
@@ -303,9 +273,88 @@
             // Handle view task button click
             $(document).on('click', '.view-task', function () {
                 const taskId = $(this).data('id');  
-                console.log('Task ID:', taskId);  
+                console.log('Task ID:', taskId); 
+                // Store the task ID in a hidden input field within the comment form
+                $('#commentForm').find('input[name="task_id"]').val(taskId); 
                 
             });
+
+            
+            // Handle Add Comment button click
+            $('#commentForm').on('submit', function (e) {
+                e.preventDefault();
+
+                // Cache form elements for reuse
+                const $form = $(this);
+                const $commentInput = $('#commentInput');
+                const $commentsList = $('#commentsList');
+                const taskId = $form.find('input[name="task_id"]').val(); // Ensure task_id is set
+                const comment = $commentInput.val().trim(); // Get and trim the comment input
+
+                // Validate comment input
+                if (!comment) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Comment is required!',
+                        showConfirmButton: true
+                    });
+                    return;
+                }
+
+                // AJAX request to submit the comment
+                $.ajax({
+                    url: '{{ route("tasks.comments") }}', // Adjust route as needed
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    data: {
+                        task_id: taskId,
+                        comment: comment
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            // Append the new comment to the comments list
+                            const newComment = `
+                                <div class="comment-item">
+                                    <strong>${response.data.user_name}</strong>
+                                    <p>${response.data.comment}</p>
+                                    <small class="text-muted">${response.data.created_at}</small>
+                                    <hr>
+                                </div>`;
+                            $commentsList.prepend(newComment); // Add the new comment at the top of the list
+
+                            // Clear the form fields
+                            $commentInput.val('');
+                            $form[0].reset();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message || 'Failed to submit the comment.',
+                                showConfirmButton: true
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error submitting comment:', xhr.responseJSON || xhr.responseText || 'Unknown error');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to submit the comment. Please try again.',
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            });
+
 
 
  

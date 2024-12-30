@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskCommentController extends Controller
 {
@@ -21,11 +22,38 @@ class TaskCommentController extends Controller
 }
 
 
-public function store(Request $request, Task $task)
+public function store(Request $request)
 {
-    
+    $validated = $request->validate([
+        'task_id' => 'required|exists:tasks,id',
+        'comment' => 'required|string',
+    ]);
+
+    $task = Task::findOrFail($validated['task_id']);
+    $task->comments()->create([
+        'user_id' =>Auth::id(),
+        'comment' => $validated['comment'],
+    ]);
+
+    // return redirect()->back()->with('success', 'Comment added successfully.');
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Comment Added Successfully!',
+        'redirect_url' => route('display')
+    ]);
+
 }
 
+    // public function destroy(TaskComment $comment)
+    // {
+    //     if ($comment->user_id !== auth()->id()) {
+    //         abort(403, 'Unauthorized action.');
+    //     }
+
+    //     $comment->delete();
+
+    //     return redirect()->back()->with('success', 'Comment deleted successfully.');
+    // }
 
 
 }
