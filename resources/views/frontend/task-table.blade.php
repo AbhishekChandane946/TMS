@@ -429,78 +429,7 @@
 
     <script type="text/javascript">  
         $(document).ready(function() { 
-            taskList(); 
-
- 
-            // Handle view task button click
-            // $(document).on('click', '.view-task', function () {
-            //     const taskId = $(this).data('id');  
-            //     console.log('Task ID:', taskId); 
-            //     // Store the task ID in a hidden input field within the comment form
-            //     $('#commentForm').find('input[name="task_id"]').val(taskId); 
-                
-            // });
- 
-            // Handle Add Comment button click
-            // $('#commentForm').on('submit', function (e) {
-            //     e.preventDefault();  
-
-            //     const comment = $('#commentInput').val().trim(); // Get and trim the comment input
-            //     const taskId = $('#commentForm').find('input[name="task_id"]').val(); // Ensure task_id is set
-            //     if (!comment) {
-            //         Swal.fire({
-            //             icon: 'warning',
-            //             title: 'Blank Comment Not Allowed !',
-            //             showConfirmButton: true
-            //         });
-            //         return;
-            //     }
-
-            //     $.ajax({
-            //         url: '{{ route("tasks.comments") }}', // Adjust route as needed
-            //         method: 'POST',
-            //         headers: {
-            //             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            //         },
-            //         data: {
-            //             task_id: taskId,
-            //             comment: comment
-            //         },
-            //         success: function (response) {
-            //             if (response.status === 'success') {
-            //                 Swal.fire({
-            //                     icon: 'success',
-            //                     title: response.message,
-            //                     showConfirmButton: false,
-            //                     timer: 2000
-            //                 });
-
-            //                 // Append the new comment to the comments list
-            //                 const newComment = `
-            //                     <div class="comment-item">
-            //                         <strong>${response.data.user_name}</strong> 
-            //                         <p>${response.data.comment}</p>
-            //                         <small class="text-muted">${response.data.created_at}</small>
-            //                         <hr>
-            //                     </div>`;
-            //                 $('#commentsList').prepend(newComment); // Add the new comment at the top of the list
-
-            //                 // Clear the comment input field
-            //                 $('#commentInput').val('');
-            //             }
-            //         },
-            //         error: function (xhr, status, error) {
-            //             console.error('Error submitting comment:', error);
-            //             Swal.fire({
-            //                 icon: 'error',
-            //                 title: 'Error!',
-            //                 text: 'Failed to submit the comment. Please try again.',
-            //                 showConfirmButton: true
-            //             });
-            //         }
-            //     });
-            // });
-
+            taskList();  
 
 
  
