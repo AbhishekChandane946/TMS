@@ -239,6 +239,7 @@
     {{-- <script src="{{ asset('dist/js/select2_and_edit_task.js') }}"></script> --}}
 
     <script>
+        // COMMENTS SCRIPT
         $(document).ready(function () {
     
             // Handle view task button click
@@ -418,6 +419,7 @@
             });
     
         });
+        // COMMENTS SCRIPT
     </script>
     
 
@@ -651,8 +653,8 @@
               });
   
    
-  });
-  
+        });
+        
         async function taskList(searchTerm = '') {
             try {  
                 const columns = @php echo json_encode($columns); @endphp;
