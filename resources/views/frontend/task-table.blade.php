@@ -145,25 +145,7 @@
     </div>
     {{-- EDIT TASK MODAL --}}
 
-    {{-- DELETE TASK MODAL --}}
-    {{-- <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteTaskModalLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this task?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="confirmDeleteTask" class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>  --}}
-    {{-- DELETE TASK MODAL --}}
+ 
 
     {{-- VIEW TASK MODAL --}}     
     <div class="modal fade" id="viewTaskModal" tabindex="-1" aria-labelledby="viewTaskModalLabel" aria-hidden="true">
@@ -241,11 +223,11 @@
     <script>
         // COMMENTS SCRIPT
         $(document).ready(function () {
-    
+            
             // Handle view task button click
             $(document).on('click', '.view-task', function () {
                 const taskId = $(this).data('id');
-                console.log('Task ID:', taskId);
+                // console.log('Task ID:', taskId);
                 $('#commentForm').find('input[name="task_id"]').val(taskId);
                 $('#commentsTab').tab('show');
                 fetchComments(taskId);
@@ -291,6 +273,48 @@
                     }
                 });
             }
+
+ 
+
+            // Handle Activities Tab click
+            $(document).on('click', '#activitiesTab', function () {
+                const taskId = $('#commentForm').find('input[name="task_id"]').val();
+                fetchActivities(taskId);
+            });
+
+            // Fetch activities for the task
+            function fetchActivities(taskId) {
+                $.ajax({
+                    url: `/tasks/${taskId}/activities`, // Matches your route
+                    method: 'GET',
+                    success: function (response) {
+                        if (response.activities.length > 0) {
+                            $('#activitiesList').empty();
+
+                            response.activities.forEach(activity => {
+                                const activityItem = `
+                                    <div class="activity-item">
+                                        <strong>${activity.activity_type}</strong>
+                                        <p>${activity.activity_description}</p>
+                                        <small class="text-muted">${activity.created_at}</small>
+                                        <hr>
+                                    </div>
+                                `;
+                                $('#activitiesList').append(activityItem);
+                            });
+                        } else {
+                            $('#activitiesList').html('<p>No activities logged for this task.</p>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching activities:', error);
+                    }
+                });
+            }
+
+
+ 
+
     
             // Handle Add Comment button click
             $('#commentForm').on('submit', function (e) {
@@ -346,12 +370,90 @@
             // Handle Edit Comment
             $(document).on('click', '.edit-comment', function (e) {
                 e.preventDefault();
+                
                 const commentId = $(this).data('comment-id');
                 const commentText = $(this).data('comment-text');
-                $('#commentInput').val(commentText);
-                $('#commentForm').find('input[name="comment_id"]').val(commentId);
+ 
+                const commentItem = $(`#comment-${commentId}`);
+ 
+                const commentInputField = `
+                    <input type="text" id="editCommentInput-${commentId}" class="form-control" value="${commentText}" />
+                    <button class="btn btn-primary mt-2" id="updateCommentButton-${commentId}">Update</button>
+                    <button class="btn btn-secondary mt-2" id="cancelEditButton-${commentId}">Cancel</button>
+                `;
+ 
+                commentItem.find('p').replaceWith(commentInputField);
+                
+                // Handle the Update button click
+                $(document).on('click', `#updateCommentButton-${commentId}`, function () {
+                    const updatedComment = $(`#editCommentInput-${commentId}`).val().trim();
+                    
+                    if (!updatedComment) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Blank Comment Not Allowed!',
+                            showConfirmButton: true
+                        });
+                        return;
+                    }
+                    
+                    // Make an AJAX request to update the comment
+                    $.ajax({
+                        url: `/comments/${commentId}`, // Adjust route as needed
+                        method: 'PUT', // Assuming you're using PUT for updating
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        data: {
+                            comment: updatedComment
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: response.message,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                // Refresh the comments list
+                                fetchComments($('#commentForm').find('input[name="task_id"]').val());
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error updating comment:', error);
+                            
+                            if (xhr.status === 403) { // Authorization error (Forbidden)
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Unauthorized!',
+                                    text: 'You are not authorized to edit this comment.',
+                                    showConfirmButton: true
+                                });
+                                fetchComments($('#commentForm').find('input[name="task_id"]').val());
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'Failed to update the comment. Please try again.',
+                                    showConfirmButton: true
+                                });
+                            }
+                        }
+                    });
+                });
+
+                // Handle the Cancel button click
+                $(document).on('click', `#cancelEditButton-${commentId}`, function () {
+                    // Remove the input field and buttons
+                    commentItem.find('input, button').remove();
+                    
+                    // Refresh the comments list
+                    fetchComments($('#commentForm').find('input[name="task_id"]').val());
+                });
             });
-    
+
+
             // Handle Delete Comment
             $(document).on('click', '.delete-comment', function (e) {
                 e.preventDefault();

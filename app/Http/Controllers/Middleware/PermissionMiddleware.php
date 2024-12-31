@@ -1,8 +1,4 @@
 <?php
-
-
-
-// app/Http/Middleware/PermissionMiddleware.php
 namespace App\Http\Middleware;
 
 use Closure;

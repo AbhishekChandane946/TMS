@@ -8,6 +8,7 @@ use App\Http\Controllers\Frontend\DashboardController;
 use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\TaskCommentController;
 use App\Http\Controllers\Frontend\TaskController;
+use App\Http\Controllers\TaskActivityController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,7 +58,11 @@ Route::get('/tasks/{task}/comments', [TaskCommentController::class, 'getComments
 Route::delete('/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('comments.destroy');
 Route::put('/comments/{comment}', [TaskCommentController::class, 'update'])->name('comments.update');
 
- 
+
+
+
+Route::post('/tasks/activities', [TaskActivityController::class, 'logActivity'])->name('tasks.activities.log');
+Route::get('/tasks/{taskId}/activities', [TaskActivityController::class, 'getTaskActivities'])->name('tasks.activities.get');
 
 
 

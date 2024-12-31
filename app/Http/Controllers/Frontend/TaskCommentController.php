@@ -105,18 +105,24 @@ class TaskCommentController extends Controller
 
 
 
-    public function update (Request $request, $id)  // (Request $request, $id)
+  
+
+    public function update(Request $request, $id)
     {
         $request->validate([
             'comment' => 'required|string|max:255',  
         ]);
-
         try {
-            $comment = TaskComment::findOrFail($id);  
+            $comment = TaskComment::findOrFail($id); 
+            if ($comment->user_id !== Auth::id() ) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to update this comment.'
+                ], 403); // Forbidden
+            }
             $comment->update([
                 'comment' => $request->comment, 
             ]);
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Comment updated successfully.',
@@ -125,10 +131,12 @@ class TaskCommentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to update the comment. Please try again.'
+                'message' => 'Failed to update the comment. Please try again.',
+                'error' => $e->getMessage()
             ], 500);
         }
-    } 
+    }
+
 
 
 
