@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Events\TaskUpdated; // Import the TaskUpdated event
+use App\Listeners\LogTaskActivity;
 use App\Listeners\LogTaskUpdate; // Import the LogTaskUpdate listener
+use TMS\app\Events\TaskUpdated as EventsTaskUpdated;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,8 +17,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        TaskUpdated::class => [
-            LogTaskUpdate::class,
+        EventsTaskUpdated::class => [
+            \App\Listeners\LogTaskUpdate::class,
         ],
     ];
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\Frontend\DashboardController;
 use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\TaskCommentController;
 use App\Http\Controllers\Frontend\TaskController;
-use App\Http\Controllers\TaskActivityController;
+use App\Http\Controllers\Frontend\TaskActivityController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,7 +61,10 @@ Route::put('/comments/{comment}', [TaskCommentController::class, 'update'])->nam
 
 
 
+// Route to log activity for a task
 Route::post('/tasks/activities', [TaskActivityController::class, 'logActivity'])->name('tasks.activities.log');
+
+// Route to get activities for a specific task
 Route::get('/tasks/{taskId}/activities', [TaskActivityController::class, 'getTaskActivities'])->name('tasks.activities.get');
 
 

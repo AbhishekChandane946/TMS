@@ -150,59 +150,65 @@
     {{-- VIEW TASK MODAL --}}     
     <div class="modal fade" id="viewTaskModal" tabindex="-1" aria-labelledby="viewTaskModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="viewTaskModalLabel">Task Details</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            <!-- Tabs -->
-            <ul class="nav nav-tabs" id="taskTabs" role="tablist">
-                <li class="nav-item">
-                <a class="nav-link active" id="comments-tab" data-bs-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="true">Comments</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" id="files-tab" data-bs-toggle="tab" href="#files" role="tab" aria-controls="files" aria-selected="false">Files</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" id="activities-tab" data-bs-toggle="tab" href="#activities" role="tab" aria-controls="activities" aria-selected="false">Activities</a>
-                </li>
-            </ul>
-    
-            <!-- Tab Content -->
-            <div class="tab-content mt-3" id="taskTabsContent">
-                <!-- Comments Tab -->
-                <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
-                <div class="comments-section">
-                    <h6>Leave a Comment</h6>
-                    <form id="commentForm">
-                     <input type="text" id="task_id" name="task_id" >   
-                    <textarea class="form-control" id="commentInput" name="taskComments" rows="3" placeholder="Type something here..."></textarea>
-                    <button type="submit" class="btn btn-primary mt-2">Add Comment</button>
-                    </form>
-                    <hr>
-                    <div id="commentsList">
-                    <!-- Comments will be loaded dynamically here -->
-                    <p>No comments yet...</p>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewTaskModalLabel">Task Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs" id="taskTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="comments-tab" data-bs-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="true">Comments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="files-tab" data-bs-toggle="tab" href="#files" role="tab" aria-controls="files" aria-selected="false">Files</a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- Add data-id to activities tab anchor -->
+                            <a class="nav-link" id="activities-tab" data-bs-toggle="tab" href="#activities" role="tab" aria-controls="activities" aria-selected="false" data-id="">Activities</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content mt-3" id="taskTabsContent">
+                        <!-- Comments Tab -->
+                        <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                            <div class="comments-section">
+                                <h6>Leave a Comment</h6>
+                                <form id="commentForm">
+                                    <input type="text" id="task_id" name="task_id">   
+                                    <textarea class="form-control" id="commentInput" name="taskComments" rows="3" placeholder="Type something here..."></textarea>
+                                    <button type="submit" class="btn btn-primary mt-2">Add Comment</button>
+                                </form>
+                                <hr>
+                                <div id="commentsList">
+                                    <!-- Comments will be loaded dynamically here -->
+                                    <p>No comments yet...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Files Tab -->
+                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                            <p>Files functionality goes here...</p>
+                        </div>
+
+                        <!-- Activities Tab -->
+                        <div class="tab-pane fade" id="activities" role="tabpanel" aria-labelledby="activities-tab">
+                            <!-- Activities will be loaded here -->
+                            <div id="activitiesList">
+                                <!-- Activities will be dynamically populated here -->
+                                <p>No activities yet...</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                </div>
-    
-                <!-- Files Tab -->
-                <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                <p>Files functionality goes here...</p>
-                </div>
-    
-                <!-- Activities Tab -->
-                <div class="tab-pane fade" id="activities" role="tabpanel" aria-labelledby="activities-tab">
-                <p>Activities functionality goes here...</p>
-                </div>
             </div>
-            </div>
-        </div>
         </div>
     </div> 
     {{-- VIEW TASK MODAL --}}
+
   </div>
 @endsection
 
@@ -276,9 +282,11 @@
 
  
 
+             
             // Handle Activities Tab click
-            $(document).on('click', '#activitiesTab', function () {
-                const taskId = $('#commentForm').find('input[name="task_id"]').val();
+            $(document).on('click', '#activities-tab', function () {   
+                const taskId = $('#task_id').val();
+                console.log('Task id: ' + taskId);
                 fetchActivities(taskId);
             });
 
@@ -289,8 +297,9 @@
                     method: 'GET',
                     success: function (response) {
                         if (response.activities.length > 0) {
-                            $('#activitiesList').empty();
+                            $('#activitiesList').empty();  // Clear previous activities
 
+                            // Loop through activities and display them
                             response.activities.forEach(activity => {
                                 const activityItem = `
                                     <div class="activity-item">
@@ -311,6 +320,7 @@
                     }
                 });
             }
+
 
 
  

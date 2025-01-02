@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Events\TaskUpdated as EventsTaskUpdated;
 use Illuminate\Http\Request;
 use App\Models\Task;   
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use TMS\app\Events\TaskUpdated;
 
 class TaskController extends Controller
 {
@@ -202,15 +204,46 @@ class TaskController extends Controller
         ]);
     }
     
+    // public function updateTask(Request $request)
+    // {
+    //     try { 
+    //         $task = Task::findOrFail($request->input('id'));
+ 
+    //         if ($task->task_created_by != Auth::id()) {
+    //             return response()->json(['status' => 'error', 'message' => 'You are not authorized to update this task']);
+    //         }
+ 
+    //         $task->title = $request->input('title');
+    //         $task->task_description = $request->input('task_description');
+    //         $task->assign_to = $request->input('assign_to');
+    //         $task->start_date = $request->input('start_date');
+    //         $task->end_date = $request->input('end_date');
+    //         $task->flag = $request->input('flag');
+    //         $task->priority = $request->input('priority');
+    
+    //         $task->save();
+    
+    //         return response()->json(['status' => 'success', 'message' => 'Task updated successfully']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['status' => 'error', 'message' => 'Failed to update task']);
+    //     }
+    // }
+
     public function updateTask(Request $request)
     {
         try { 
+            // Find the task by ID
             $task = Task::findOrFail($request->input('id'));
- 
+    
+            // Check if the user is authorized to update the task
             if ($task->task_created_by != Auth::id()) {
                 return response()->json(['status' => 'error', 'message' => 'You are not authorized to update this task']);
             }
- 
+    
+            // Store old values for logging
+            $oldData = $task->toArray();
+    
+            // Update the task with new values from the request
             $task->title = $request->input('title');
             $task->task_description = $request->input('task_description');
             $task->assign_to = $request->input('assign_to');
@@ -218,8 +251,17 @@ class TaskController extends Controller
             $task->end_date = $request->input('end_date');
             $task->flag = $request->input('flag');
             $task->priority = $request->input('priority');
-    
+        
+            // Save the updated task
             $task->save();
+    
+            // Prepare data for the event
+            $activityType = 'Update';
+            $activityDescription = 'Task details were updated';
+    
+            event(new EventsTaskUpdated($task->id, $activityType, $activityDescription));
+            \Log::info('TaskUpdated event fired for task ID: ' . $task->id);
+            
     
             return response()->json(['status' => 'success', 'message' => 'Task updated successfully']);
         } catch (\Exception $e) {
