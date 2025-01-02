@@ -231,7 +231,7 @@ class TaskController extends Controller
 
     public function updateTask(Request $request)
     {
-        try { 
+        try {
             // Find the task by ID
             $task = Task::findOrFail($request->input('id'));
     
@@ -239,9 +239,6 @@ class TaskController extends Controller
             if ($task->task_created_by != Auth::id()) {
                 return response()->json(['status' => 'error', 'message' => 'You are not authorized to update this task']);
             }
-    
-            // Store old values for logging
-            $oldData = $task->toArray();
     
             // Update the task with new values from the request
             $task->title = $request->input('title');
@@ -251,23 +248,17 @@ class TaskController extends Controller
             $task->end_date = $request->input('end_date');
             $task->flag = $request->input('flag');
             $task->priority = $request->input('priority');
-        
+    
             // Save the updated task
             $task->save();
     
-            // Prepare data for the event
-            $activityType = 'Update';
-            $activityDescription = 'Task details were updated';
-    
-            event(new EventsTaskUpdated($task->id, $activityType, $activityDescription));
-            \Log::info('TaskUpdated event fired for task ID: ' . $task->id);
-            
-    
+            // The TaskObserver will handle logging the activity
             return response()->json(['status' => 'success', 'message' => 'Task updated successfully']);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to update task']);
+            return response()->json(['status' => 'error', 'message' => 'Failed to update task', 'error' => $e->getMessage()]);
         }
     }
+    
     
 
 // GET AND UPDATE

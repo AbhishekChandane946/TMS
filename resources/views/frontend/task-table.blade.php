@@ -290,29 +290,41 @@
                 fetchActivities(taskId);
             });
 
+            
             // Fetch activities for the task
             function fetchActivities(taskId) {
                 $.ajax({
-                    url: `/tasks/${taskId}/activities`, // Matches your route
+                    url: `/tasks/${taskId}/activities`, 
                     method: 'GET',
                     success: function (response) {
-                        if (response.activities.length > 0) {
-                            $('#activitiesList').empty();  // Clear previous activities
+                        if (response.status === 'success') {
+                            $('#activitiesList').empty(); // Clear previous activities
 
-                            // Loop through activities and display them
-                            response.activities.forEach(activity => {
-                                const activityItem = `
-                                    <div class="activity-item">
-                                        <strong>${activity.activity_type}</strong>
-                                        <p>${activity.activity_description}</p>
-                                        <small class="text-muted">${activity.created_at}</small>
-                                        <hr>
+                            if (response.data.length > 0) {
+                                response.data.forEach(activity => {
+                                    const activityItem = `
+                                    <div class="activity-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="activity-avatar">
+                                                <!-- Assuming initials are dynamic -->
+                                                <span>${activity.initials || 'AC'}</span>
+                                            </div>
+                                            <div class="activity-details ms-3">
+                                                <small class="text-muted">${activity.created_at}</small>
+                                                <p class="mb-1"><strong>${activity.type}</strong></p>
+                                                <p class="mb-0 text-muted">${activity.description}</p>
+                                            </div>
+                                        </div> 
                                     </div>
-                                `;
-                                $('#activitiesList').append(activityItem);
-                            });
+                                    <hr>
+                                    `;
+                                    $('#activitiesList').append(activityItem);
+                                });
+                            } else {
+                                $('#activitiesList').html('<p>No activities logged for this task.</p>');
+                            }
                         } else {
-                            $('#activitiesList').html('<p>No activities logged for this task.</p>');
+                            console.error('Failed to load activities:', response.message);
                         }
                     },
                     error: function (xhr, status, error) {
@@ -320,6 +332,7 @@
                     }
                 });
             }
+
 
 
 

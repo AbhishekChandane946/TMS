@@ -15,16 +15,29 @@ class TaskActivityController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getTaskActivities($taskId)
-    {
-        $task = Task::findOrFail($taskId);
+    { 
 
         $activities = TaskActivity::where('task_id', $taskId)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // ->with('user:id,name') 
+        ->orderBy('created_at', 'desc') // Order by newest first
+        ->get();
+
+        //  $activities = TaskActivity::where('task_id', $taskId)->get();
+        $formattedActivities = $activities->map(function ($activity) {
+            return [
+                'id' => $activity->id,
+                'type' => $activity->activity_type,
+                'description' => $activity->activity_description,
+                'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
+                'user_name' => $activity->user ? $activity->user->name : ' ',
+            ];
+        });
 
         return response()->json([
-            'task' => $task,
-            'activities' => $activities,
+            'status' => 'success',
+            'data' =>  $formattedActivities
         ]);
+
+
     }
 }
