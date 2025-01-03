@@ -228,7 +228,7 @@ class TaskController extends Controller
     //         return response()->json(['status' => 'error', 'message' => 'Failed to update task']);
     //     }
     // }
-
+    
     public function updateTask(Request $request)
     {
         try {

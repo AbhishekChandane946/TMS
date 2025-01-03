@@ -27,6 +27,10 @@ class TaskObserver
     public function updated(Task $task)
     {
         $this->logActivity($task, 'updated', 'Task updated');
+        
+        if ($task->status === 'deleted') {
+            $this->logActivity($task, 'deleted', 'Task marked as deleted');
+        }
     }
 
     /**
@@ -37,7 +41,9 @@ class TaskObserver
      */
     public function deleted(Task $task)
     {
-        $this->logActivity($task, 'deleted', 'Task deleted');
+        if ($task->status === 'deleted') {
+            $this->logActivity($task, 'deleted', 'Task marked as deleted');
+        }
     }
 
     /**
