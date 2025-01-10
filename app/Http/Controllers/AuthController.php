@@ -18,9 +18,9 @@ class AuthController extends Controller
         ]);
     
         $credentials = $request->only('email', 'password');
-        $remember = $request->has('remember');
+
     
-        if (Auth::attempt($credentials, $remember)) {
+        if (Auth::attempt($credentials )) {
             $request->session()->regenerate(); 
             return redirect()->route('frontend.index')->with('success', 'Welcome back!');
         }
@@ -39,8 +39,11 @@ class AuthController extends Controller
         Auth::logout();
 
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->session()->regenerateToken(); 
+        //old session madhil token reuse zala nahi pahije tyasathi hi line token regenrate karte 
 
         return redirect('/signin')->with('success', 'You have been logged out.');
     }
+
+
 }

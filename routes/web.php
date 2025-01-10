@@ -18,6 +18,7 @@ Route::get('/profile',[ProfileController::class,'index']);
 
 
 Route::get('/dashboard', [DashboardController::class,'index'])->name('frontend.index');
+
 Route::get('/login', function () {
     return view('auth.login');  
 })->name('login')->middleware('guest');

@@ -242,7 +242,7 @@
             // Fetch comments for the task
             function fetchComments(taskId) {
                 $.ajax({
-                    url: '{{ route("tasks.getComments", ["task" => "taskId"]) }}'.replace('taskId', taskId), // Adjust route as needed
+                    url: `/tasks/${taskId}/comments`,
                     method: 'GET',
                     success: function (response) {
                         if (response.status === 'success') {
@@ -577,7 +577,7 @@
                     $('select[name="priority"]').val(response.data.priority); 
 
                     var assignTo = response.data.assign_to;  
-                    $('#assignTo').val(assignTo).trigger('change');  
+                    $('#assignTo').val(assignTo)  
 
  
                 },
