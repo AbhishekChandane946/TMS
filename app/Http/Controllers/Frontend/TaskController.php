@@ -14,6 +14,7 @@ use TMS\app\Events\TaskUpdated;
 class TaskController extends Controller
 {
   
+//  TASK FORM RENDERING(DISPLAY) AND STORE   
     public function index()
     {   
         // For  Displaying the task Form view (frontend.task).
@@ -22,7 +23,29 @@ class TaskController extends Controller
         // Route::get('/task',[TaskController::class,'index']); 
     }
 
- 
+        // Display Usres with Select2 Searchable Dropdown 
+        public function getUsers(Request $request)
+        {
+            /*
+                Fetches users based on a search query.
+            */
+            $search = $request->get('q');  
+            /*
+                It retrieves users whose names or user types match the search query.
+            */
+    
+            $users = User::where('name', 'LIKE', "%{$search}%")
+                        ->orWhere('user_type', 'LIKE', "%{$search}%")
+                        ->select('id', 'name', 'user_type')  
+                        ->take(10)  
+                        ->get();
+            /*
+                It returns a JSON response with the matched users.
+            */
+            return response()->json($users);
+        }
+        // Display Usres with Select2 Searchable Dropdown
+
     public function store(Request $request)
     {   
         // For Creating a new task.
@@ -81,30 +104,11 @@ class TaskController extends Controller
             return response()->json($response);
         }
     }
-    
+//  TASK FORM RENDERING(DISPLAY) AND STORE    
 
     
  
-    public function getUsers(Request $request)
-    {
-        /*
-            Fetches users based on a search query.
-        */
-        $search = $request->get('q');  
-        /*
-            It retrieves users whose names or user types match the search query.
-        */
- 
-        $users = User::where('name', 'LIKE', "%{$search}%")
-                     ->orWhere('user_type', 'LIKE', "%{$search}%")
-                     ->select('id', 'name', 'user_type')  
-                     ->take(10)  
-                     ->get();
-        /*
-            It returns a JSON response with the matched users.
-        */
-        return response()->json($users);
-    }
+
     
 
 // LIST AND DISPLAY 
@@ -233,8 +237,7 @@ class TaskController extends Controller
         // It returns the task table view with the necessary data.
         return view('frontend.task-table', compact('columns', 'users'));
     }
-    
-    
+   
 // LIST AND DISPLAY 
     
 

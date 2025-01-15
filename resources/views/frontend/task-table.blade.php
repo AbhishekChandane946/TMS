@@ -2,6 +2,11 @@
 
 @section('main-container')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<style>
+    .dataTables_filter{
+display: none;
+}
+</style>
   <div class="page-wrapper">
     <!-- Page header -->
     <div class="page-header d-print-none">
