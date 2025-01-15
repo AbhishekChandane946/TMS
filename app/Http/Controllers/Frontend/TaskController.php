@@ -15,14 +15,21 @@ class TaskController extends Controller
 {
   
     public function index()
-    {
+    {   
+        // For  Displaying the task Form view (frontend.task).
+        // It   returns a Form view  in the browser.
         return view('frontend.task');
     }
 
  
     public function store(Request $request)
-    {
+    {   
+        // For Creating a new task.
         try {
+            /* 
+                First, the method validates the incoming request data to ensure all necessary fields
+                are present and in the correct format. 
+            */
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'task_description' => 'required|string',
@@ -33,6 +40,10 @@ class TaskController extends Controller
                 'priority' => 'required|string',
             ]);
     
+            /* 
+                If validation passes, a new task is created using the Task::create() method,
+                where the validated data is saved to the database.
+            */
             $task = Task::create([
                 'title' => $validated['title'],
                 'task_description' => $validated['task_description'],
@@ -51,11 +62,17 @@ class TaskController extends Controller
                 'redirect_url' => route('display')
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            /*
+                If validation fails, it catches the validation exception and returns an error message.
+            */
             $response['status'] = 'failed';
             $response['message'] = 'All Fields Required';
             $response['errors'] = $e->errors();  
             return response()->json($response, 422);  
         } catch (\Exception $e) {
+            /*
+                In case of any other exception, it returns a generic error message.
+            */
             $response['message'] = 'An error occurred while creating the task. Please try again later.';
             $response['status'] = "failed";
             $response['act'] = "TERMINATE";
@@ -68,14 +85,21 @@ class TaskController extends Controller
  
     public function getUsers(Request $request)
     {
+        /*
+            Fetches users based on a search query.
+        */
         $search = $request->get('q');  
-
+        /*
+            It retrieves users whose names or user types match the search query.
+        */
         $users = User::where('name', 'LIKE', "%{$search}%")
                      ->orWhere('user_type', 'LIKE', "%{$search}%")
                      ->select('id', 'name', 'user_type')  
                      ->take(10)  
                      ->get();
-
+        /*
+            It returns a JSON response with the matched users.
+        */
         return response()->json($users);
     }
     
@@ -83,10 +107,17 @@ class TaskController extends Controller
 // LIST AND DISPLAY 
     public function getTasksList(Request $request)
     {
+        /*
+            Fetches and lists tasks with pagination.
+            It accepts parameters like start and length for pagination.
+        */
         $start  = $request->input('start', 0); 
         $length = $request->input('length', 10); 
         $page   = ($start / $length) + 1;  
-    
+        /*
+            It joins the tasks table with users for the assigned user
+            and the creator of the task
+        */
         $query = Task::query()
             ->leftJoin('users as assign_to_user', 'tasks.assign_to', '=', 'assign_to_user.id')  
             ->leftJoin('users as created_by_user', 'tasks.task_created_by', '=', 'created_by_user.id') 
@@ -104,7 +135,11 @@ class TaskController extends Controller
             ]); 
     
         $data = $query->paginate($length, ['*'], 'page', $page); 
-    
+            
+        /* 
+            The tasks are then paginated and formatted for display, 
+            including buttons for editing, deleting, or restoring tasks depending on their status.
+        */
         $tableData = $data->map(function ($item) {
             // Determine the buttons based on task status
             $buttons = '<div class="btn-group" role="group">
@@ -155,14 +190,14 @@ class TaskController extends Controller
             ];
         });
     
-        // Prepare the response
+        // The response contains the total number of tasks, filtered records, and the formatted data
         $response = [
             'recordsTotal' => Task::count(),  // Total number of records
             'recordsFiltered' => $data->total(),  // Total number of filtered records
             'data' => $tableData,  // The data to display in the table
             'status' => 'success',
         ];
-    
+        
         return response()->json($response);
     }
 
@@ -170,7 +205,7 @@ class TaskController extends Controller
 
     public function display()
     {
-         
+        //  Displays the task table.
         $columns = [
             ['title' => '#ID', 'data' => 0], 
             ['title' => 'Title', 'data' => 1],
@@ -184,9 +219,13 @@ class TaskController extends Controller
             ['title' => 'Status', 'data' => 9],
             ['title' => 'Actions', 'data' => 10],
         ];
- 
+        
+        /* It prepares column headers for a task table and retrieves 
+            all users to be used in the frontend.
+        */    
         $users = User::select('id', 'name', 'user_type')->get();
-     
+        
+        // It returns the task table view with the necessary data.
         return view('frontend.task-table', compact('columns', 'users'));
     }
     
@@ -197,6 +236,7 @@ class TaskController extends Controller
 // GET AND UPDATE
     public function getTaskById($id)
     { 
+        // Fetches a specific task by its ID.
         $task = Task::with('user')->findOrFail($id);
         // dd($task); 
         return response()->json([
@@ -231,32 +271,32 @@ class TaskController extends Controller
     
     public function updateTask(Request $request)
     {
-        try {
-            // Find the task by ID
-            $task = Task::findOrFail($request->input('id'));
-    
-            // Check if the user is authorized to update the task
-            if ($task->task_created_by != Auth::id()) {
-                return response()->json(['status' => 'error', 'message' => 'You are not authorized to update this task']);
+            try {
+                // Find the task by ID
+                $task = Task::findOrFail($request->input('id'));
+        
+                // Check if the user is authorized to update the task
+                if ($task->task_created_by != Auth::id()) {
+                    return response()->json(['status' => 'error', 'message' => 'You are not authorized to update this task']);
+                }
+        
+                // Update the task with new values from the request
+                $task->title = $request->input('title');
+                $task->task_description = $request->input('task_description');
+                $task->assign_to = $request->input('assign_to');
+                $task->start_date = $request->input('start_date');
+                $task->end_date = $request->input('end_date');
+                $task->flag = $request->input('flag');
+                $task->priority = $request->input('priority');
+        
+                // Save the updated task
+                $task->save();
+        
+                // The TaskObserver will handle logging the activity
+                return response()->json(['status' => 'success', 'message' => 'Task updated successfully']);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'error', 'message' => 'Failed to update task', 'error' => $e->getMessage()]);
             }
-    
-            // Update the task with new values from the request
-            $task->title = $request->input('title');
-            $task->task_description = $request->input('task_description');
-            $task->assign_to = $request->input('assign_to');
-            $task->start_date = $request->input('start_date');
-            $task->end_date = $request->input('end_date');
-            $task->flag = $request->input('flag');
-            $task->priority = $request->input('priority');
-    
-            // Save the updated task
-            $task->save();
-    
-            // The TaskObserver will handle logging the activity
-            return response()->json(['status' => 'success', 'message' => 'Task updated successfully']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to update task', 'error' => $e->getMessage()]);
-        }
     }
     
     

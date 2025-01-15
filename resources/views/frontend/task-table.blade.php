@@ -597,8 +597,8 @@
 
 
 
-              // update task cha code || 2. form submit zalyanantar chi process
-              $('#update-task-button').click(function () {
+        // update task cha code || 2. form submit zalyanantar chi process
+        $('#update-task-button').click(function () {
                     var $updateTaskButton = $(this); // Button target for loader processing
                     var $form = $('#updateTaskForm'); // Form ID target
                     var formData = $form.serialize(); // Serialize form data
@@ -624,7 +624,7 @@
                                 });
                                 taskList();  
                             } else if (response.status === 'error' && response.message === 'You are not authorized to update this task') {
-                                 
+                                
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Unauthorized!',
@@ -632,7 +632,7 @@
                                     showConfirmButton: true
                                 });
                             } else {
-                               
+                            
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Failed to update task',
@@ -640,13 +640,13 @@
                                 });
                             }
 
-                             
+                            
                             $updateTaskButton.html('Update Task').prop('disabled', false);
                         },
                         error: function (xhr, status, error) {
                             console.log('Error updating task: ', error);
 
-                           
+                        
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
@@ -654,133 +654,142 @@
                                 showConfirmButton: true
                             });
 
-                             
+                            
                             $updateTaskButton.html('Update Task').prop('disabled', false);
                         }
                     });
-              });
-
- 
-    
-              $(document).on('click', '.delete-task', function () {
-                  const taskId = $(this).data('id');
-   
-                  Swal.fire({
-                      title: 'Are you sure?',
-                      text: 'You are about to delete this task!',
-                      icon: 'warning',
-                      showCancelButton: true,
-                      confirmButtonText: 'Yes, delete it!',
-                      cancelButtonText: 'Cancel',
-                      reverseButtons: true
-                  }).then((result) => {
-                      if (result.isConfirmed) {
-                          $.ajax({
-                              url: `/tasks/${taskId}/delete`,
-                              method: 'POST',
-                              headers: {
-                                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                              },
-                              success: function (response) {
-                                  if (response.status === 'success') {
-                                      Swal.fire(
-                                          'Deleted!',
-                                          'Task status updated to deleted.',
-                                          'success'
-                                      );
-                                      taskList();  
-                                  } else if (response.status === 'error' && response.message === 'You are not authorized to delete this task') {
-                                      Swal.fire(
-                                          'Unauthorized!',
-                                          'You are not authorized to delete this task.',
-                                          'error'
-                                      );
-                                  } else if (response.status === 'error' && response.message === 'Task is already deleted') {
-                                      Swal.fire(
-                                          'Already Deleted!',
-                                          'This task has already been deleted.',
-                                          'warning'
-                                      );
-                                  } else {
-                                      Swal.fire(
-                                          'Failed!',
-                                          'Failed to update task status.',
-                                          'error'
-                                      );
-                                  }
-                              },
-                              error: function (error) {
-                                  console.error('Error updating task status:', error);
-                                  Swal.fire(
-                                      'Error!',
-                                      'Something went wrong. Please try again.',
-                                      'error'
-                                  );
-                              }
-                          });
-                      }
-                  });
-              });
-  
-  
-              $(document).on('click', '.restore-task', function () {
-                  const taskId = $(this).data('id');
-  
-                  Swal.fire({
-                      title: 'Are you sure?',
-                      text: 'You are about to restore this task!',
-                      icon: 'warning',
-                      showCancelButton: true,
-                      confirmButtonText: 'Yes, restore it!',
-                      cancelButtonText: 'Cancel',
-                      reverseButtons: true
-                  }).then((result) => {
-                      if (result.isConfirmed) {
-                          $.ajax({
-                              url: `/tasks/${taskId}/restore`,
-                              method: 'POST',
-                              headers: {
-                                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                              },
-                              success: function (response) {
-                                  if (response.status === 'success') {
-                                      Swal.fire(
-                                          'Restored!',
-                                          'Task has been restored successfully.',
-                                          'success'
-                                      );
-                                      taskList(); // Refresh the task list
-                                  } else if (response.status === 'error' && response.message === 'You are not authorized to restore this task') {
-                                      Swal.fire(
-                                          'Unauthorized!',
-                                          'You are not authorized to restore this task.',
-                                          'error'
-                                      );
-                                  } else {
-                                      Swal.fire(
-                                          'Failed!',
-                                          'Failed to restore task.',
-                                          'error'
-                                      );
-                                  }
-                              },
-                              error: function (error) {
-                                  console.error('Error restoring task:', error);
-                                  Swal.fire(
-                                      'Error!',
-                                      'Something went wrong. Please try again.',
-                                      'error'
-                                  );
-                              }
-                          });
-                      }
-                  });
-              });
-  
-   
         });
-        
+
+
+    
+        $(document).on('click', '.delete-task', function () {
+            const taskId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to delete this task!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/tasks/${taskId}/delete`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Task status updated to deleted.',
+                                    'success'
+                                );
+                                taskList();  
+                            } else if (response.status === 'error' && response.message === 'You are not authorized to delete this task') {
+                                Swal.fire(
+                                    'Unauthorized!',
+                                    'You are not authorized to delete this task.',
+                                    'error'
+                                );
+                            } else if (response.status === 'error' && response.message === 'Task is already deleted') {
+                                Swal.fire(
+                                    'Already Deleted!',
+                                    'This task has already been deleted.',
+                                    'warning'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Failed!',
+                                    'Failed to update task status.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error updating task status:', error);
+                            Swal.fire(
+                                'Error!',
+                                'Something went wrong. Please try again.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+
+        $(document).on('click', '.restore-task', function () {
+            const taskId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to restore this task!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, restore it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/tasks/${taskId}/restore`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                Swal.fire(
+                                    'Restored!',
+                                    'Task has been restored successfully.',
+                                    'success'
+                                );
+                                taskList(); // Refresh the task list
+                            } else if (response.status === 'error' && response.message === 'You are not authorized to restore this task') {
+                                Swal.fire(
+                                    'Unauthorized!',
+                                    'You are not authorized to restore this task.',
+                                    'error'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Failed!',
+                                    'Failed to restore task.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error restoring task:', error);
+                            Swal.fire(
+                                'Error!',
+                                'Something went wrong. Please try again.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+
+        });
+
+
+
+
+
+
+
         async function taskList(searchTerm = '') {
+            /*
+                Fetches tasks from the backend and displays them in a table using DataTables.
+            */
             try {  
                 const columns = @php echo json_encode($columns); @endphp;
                 const tableID = 'taskList'; 
@@ -790,12 +799,17 @@
                 };
   
                 // Send CSRF token with the AJAX request
+                // Ensures the request is secure by including a CSRF token in the headers.
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-  
+
+                /*
+                    Call ajaxGrid :
+                    Passes the table ID, URL, parameters, and column definitions to the ajaxGrid function.
+                */
                 ajaxGrid(tableID, "{{ route('getTasksList') }}", params, columns);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
@@ -804,19 +818,23 @@
   
         // Common AJAX Grid Function
         function ajaxGrid(tableID, url, params, columnsData) {
+            // Handles server-side DataTables integration.
             $('#progressBaar').show();
   
             if ($.fn.DataTable.isDataTable('#' + tableID)) {
+                //If a DataTable already exists, destroy it to avoid duplication.
                 $('#' + tableID).DataTable().destroy();
             }
   
             var result = $('#' + tableID).DataTable({
                 serverSide: true,
+                // Fetches data from the server (url) using POST requests.
                 ajax: {
                     url: url,
                     type: 'POST',
                     data: params,
                     beforeSend: function () {
+                        //Shows a progress bar while loading data.
                         $('#progressBaar').show();
                     },
                     complete: function () {
@@ -826,13 +844,16 @@
                         console.error('Error fetching data:', error);
                     },
                 },
+                // Maps column definitions to display task details
                 columns: columnsData,
                 order: [[0, 'desc']],
                 pageLength: 10,  
+                // Allows pagination with options for 10, 25, 50, or 100 records per page.
                 lengthMenu: [10, 25, 50, 100], 
                 pagingType: "full_numbers",  
                 searching: false,
                 ordering: false,
+                // Ensures the table adapts to different screen sizes.
                 responsive: true, // Enable responsive plugin
             });
   
