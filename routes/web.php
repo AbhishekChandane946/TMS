@@ -52,7 +52,7 @@ Route::post('/tasks/{id}/restore', [TaskController::class, 'restoreTask']);
 
 
 
-Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+// Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
 Route::post('/tasks/comments', [TaskCommentController::class, 'store'])->name('tasks.comments');
 // Route::get('/tasks/{task}/comments', [TaskController::class, 'getComments'])->name('tasks.getComments');
 Route::get('/tasks/{task}/comments', [TaskCommentController::class, 'getComments'])->name('tasks.getComments');
@@ -62,9 +62,7 @@ Route::put('/comments/{comment}', [TaskCommentController::class, 'update'])->nam
 
 
 
-// Route to log activity for a task
-Route::post('/tasks/activities', [TaskActivityController::class, 'logActivity'])->name('tasks.activities.log');
-
+ 
 // Route to get activities for a specific task
 Route::get('/tasks/{taskId}/activities', [TaskActivityController::class, 'getTaskActivities'])->name('tasks.activities.get');
 

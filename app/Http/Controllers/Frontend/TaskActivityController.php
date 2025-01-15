@@ -21,7 +21,7 @@ class TaskActivityController extends Controller
         // ->with('user:id,name') 
         ->orderBy('created_at', 'desc') // Order by newest first
         ->get();
-
+        
         //  $activities = TaskActivity::where('task_id', $taskId)->get();
         $formattedActivities = $activities->map(function ($activity) {
             return [

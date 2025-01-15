@@ -19,12 +19,14 @@ class TaskController extends Controller
         // For  Displaying the task Form view (frontend.task).
         // It   returns a Form view  in the browser.
         return view('frontend.task');
+        // Route::get('/task',[TaskController::class,'index']); 
     }
 
  
     public function store(Request $request)
     {   
         // For Creating a new task.
+        // Route::post('/tasks', [TaskController::class, 'store'])->name('task.store');
         try {
             /* 
                 First, the method validates the incoming request data to ensure all necessary fields
@@ -92,6 +94,7 @@ class TaskController extends Controller
         /*
             It retrieves users whose names or user types match the search query.
         */
+ 
         $users = User::where('name', 'LIKE', "%{$search}%")
                      ->orWhere('user_type', 'LIKE', "%{$search}%")
                      ->select('id', 'name', 'user_type')  
@@ -109,7 +112,7 @@ class TaskController extends Controller
     {
         /*
             Fetches and lists tasks with pagination.
-            It accepts parameters like start and length for pagination.
+            It accepts parameters like start and length for pagination 
         */
         $start  = $request->input('start', 0); 
         $length = $request->input('length', 10); 
@@ -119,8 +122,10 @@ class TaskController extends Controller
             and the creator of the task
         */
         $query = Task::query()
-            ->leftJoin('users as assign_to_user', 'tasks.assign_to', '=', 'assign_to_user.id')  
+            ->leftJoin('users as assign_to_user', 'tasks.assign_to', '=', 'assign_to_user.id') 
+            // Joins the users table to the tasks table using a left join 
             ->leftJoin('users as created_by_user', 'tasks.task_created_by', '=', 'created_by_user.id') 
+            // The alias assign_to_user is used for the users table.
             ->select([
                 'tasks.id',
                 'tasks.title',
@@ -244,31 +249,6 @@ class TaskController extends Controller
         ]);
     }
     
-    // public function updateTask(Request $request)
-    // {
-    //     try { 
-    //         $task = Task::findOrFail($request->input('id'));
- 
-    //         if ($task->task_created_by != Auth::id()) {
-    //             return response()->json(['status' => 'error', 'message' => 'You are not authorized to update this task']);
-    //         }
- 
-    //         $task->title = $request->input('title');
-    //         $task->task_description = $request->input('task_description');
-    //         $task->assign_to = $request->input('assign_to');
-    //         $task->start_date = $request->input('start_date');
-    //         $task->end_date = $request->input('end_date');
-    //         $task->flag = $request->input('flag');
-    //         $task->priority = $request->input('priority');
-    
-    //         $task->save();
-    
-    //         return response()->json(['status' => 'success', 'message' => 'Task updated successfully']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['status' => 'error', 'message' => 'Failed to update task']);
-    //     }
-    // }
-    
     public function updateTask(Request $request)
     {
             try {
@@ -356,110 +336,6 @@ class TaskController extends Controller
     
 
     
-
-
-    
-
-
-
-
-    //GET FEEDBACK ENTRIES #LIST ------CONTROLLER
-    // public function getFeedbackEntriesList($feedbackId, Request $request)
-    // {
-    //     try {
-    //         $start  = $request->input('start', 0); 
-    //         $length = $request->input('length', 10); 
-    //         $search = $request->input('search');             
-    //         $page   = ($start / $length) + 1;
-
-    //         //SEARCH
-    //         $query = UserFeedback::with(['user', 'feedback', 'feedbackQuestion'])
-    //                 ->where('feedback_id', $feedbackId)
-    //                 ->orderBy('id', 'desc');
-
-    //         if (!empty($search)) {
-    //             $query->where(function ($q) use ($search) {
-    //                 $q->where('id', 'like', "%$search%")
-    //                     ->orWhereHas('user', function ($q2) use ($search) {
-    //                         $q2->where('name', 'like', "%$search%");
-    //                     })
-    //                     ->orWhereHas('feedback', function ($q3) use ($search) {
-    //                         $q3->where('title', 'like', "%$search%");
-    //                     })
-    //                     ->orWhereHas('feedbackQuestion', function ($q4) use ($search) {
-    //                         $q4->where('label', 'like', "%$search%");
-    //                     })
-    //                     ->orWhere('answer', 'like', "%$search%");
-    //             });
-    //         }
-
-    //         $data = $query->paginate($length, ['*'], 'page', $page);
-    //         //END
-
-    //         $tableData=array();
-
-    //         $tableData = $data->map(function ($item) {
-    //             return [
-    //                 $item->id,
-    //                 $item->user ? $item->user->name : '', 
-    //                 $item->feedback ? $item->feedback->title : '', 
-    //                 $item->feedbackQuestion ? $item->feedbackQuestion->label : '', 
-    //                 $item->feedbackQuestion->type == "rating" ? str_repeat('★', min($item->answer, 5)) : $item->answer,
-    //                 isset($item->created_at) ? Carbon::parse($item->created_at)->format('d-m-Y') : 'N/A',
-    //             ];
-    //         });
-
-    //         $response = [
-    //             'recordsTotal' => UserFeedback::where('feedback_id', $feedbackId)->count(), 
-    //             'recordsFiltered' => $data->total(), 
-    //             'data' => $tableData,
-    //             'status' => 'success',
-    //         ];
-
-    //         return response()->json($response);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'status' => 'failed',
-    //             'message' => 'An error occurred while fetching data. Please try again later.'
-    //         ]);
-    //     }
-    // }
-    
- 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-    
-    
-
-    
- 
 
 }
 

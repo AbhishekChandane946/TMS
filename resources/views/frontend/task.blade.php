@@ -120,23 +120,36 @@
                   ajax: {
                       url: '{{ route("tasks.getUsers") }}',  
                       dataType: 'json',
-                      delay: 250,
                       data: function (params) {
                           return {
                               q: params.term  
                           };
                       },
                       processResults: function (data) {
+                        /*
+                          processResults: function (data) { ... }
+                          Processes the server response (data).
+                        */  
+                        console.log( 'First Response Directly From Server : ' + data);
                           return {
                               results: data.map(function (user) {
+                                console.log( 'Second Response From Loop  : ' + user.id + ' ' + user.name);
                                   return {
+                                    /*
+                                      Converts raw server data into a user-friendly dropdown format
+                                      Loops through the data (array of users).
+                                      Maps each user to an object with:
+                                      id: The user's unique identifier.
+                                      text: The text to display in the dropdown (e.g., Abhishek Chandane (Internal)).
+                                    */
                                       id: user.id,
                                       text: user.name + ' (' + user.user_type + ')'  
                                   };
                               })
                           };
+
                       },
-                      cache: true
+                   
                   }
                 });
 
